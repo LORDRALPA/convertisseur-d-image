@@ -189,7 +189,7 @@ class ImageConverterUI(QMainWindow):
         format_section_layout.addWidget(format_label)
         
         self.format_combo = QComboBox()
-        self.format_combo.addItems(["jpg", "png", "webp", "gif", "bmp", "tiff", "heic", "svg", "pdf"])
+        self.format_combo.addItems(sorted(FORMAT_INFO.keys()))
         self.format_combo.currentTextChanged.connect(self.on_format_changed)
         format_section_layout.addWidget(self.format_combo)
         
@@ -224,7 +224,18 @@ class ImageConverterUI(QMainWindow):
         self.progress_bar = QProgressBar()
         self.progress_bar.setVisible(False)
         main_layout.addWidget(self.progress_bar)
-        
+
+        # Crédits
+        credits_label = QLabel("Développé par <b>Théophile TOKRE</b> · Convertisseur d'Images Pro")
+        credits_label.setAlignment(Qt.AlignCenter)
+        credits_label.setStyleSheet("""
+            color: #888;
+            font-size: 11px;
+            padding: 6px 0 2px 0;
+            border-top: 1px solid #ddd;
+        """)
+        main_layout.addWidget(credits_label)
+
         central_widget.setLayout(main_layout)
     
     def select_files(self):

@@ -315,6 +315,76 @@ def convert_vector_to_vector(input_path, output_path, source_format, target_form
     except Exception as e:
         return False, f"Erreur: {str(e)}"
 
+CREDITS_AUTHOR = "Théophile TOKRE"
+CREDITS_SOFTWARE = "Convertisseur d'Images Pro"
+
+
+def _embed_credits_metadata(output_path, target_format):
+    """Injecte la date de conversion et les crédits dans les métadonnées du fichier."""
+    from datetime import datetime
+    date_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    comment = f"Converti le {date_str} | Auteur: {CREDITS_AUTHOR} | Logiciel: {CREDITS_SOFTWARE}"
+    fmt = target_format.lower()
+
+    try:
+        if fmt in ("jpg", "jpeg", "tiff", "webp"):
+            img = Image.open(output_path)
+            exif = img.getexif()
+            exif[0x010E] = comment          # ImageDescription
+            exif[0x013B] = CREDITS_AUTHOR   # Artist
+            exif[0x0131] = CREDITS_SOFTWARE  # Software
+            exif_bytes = exif.tobytes()
+            save_kwargs = {"exif": exif_bytes}
+            if fmt in ("jpg", "jpeg"):
+                save_kwargs["quality"] = 90
+                img.save(output_path, "JPEG", **save_kwargs)
+            elif fmt == "tiff":
+                img.save(output_path, "TIFF", **save_kwargs)
+            elif fmt == "webp":
+                save_kwargs["quality"] = 90
+                img.save(output_path, "WEBP", **save_kwargs)
+
+        elif fmt == "png":
+            from PIL.PngImagePlugin import PngInfo
+            img = Image.open(output_path)
+            meta = PngInfo()
+            meta.add_text("Author", CREDITS_AUTHOR)
+            meta.add_text("Software", CREDITS_SOFTWARE)
+            meta.add_text("Comment", comment)
+            meta.add_text("Creation Time", date_str)
+            img.save(output_path, "PNG", pnginfo=meta)
+
+        elif fmt == "svg":
+            import re
+            with open(output_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            meta_block = (
+                f'\n  <metadata>'
+                f'<dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">{CREDITS_AUTHOR}</dc:creator>'
+                f'<dc:date xmlns:dc="http://purl.org/dc/elements/1.1/">{date_str}</dc:date>'
+                f'<dc:description xmlns:dc="http://purl.org/dc/elements/1.1/">{CREDITS_SOFTWARE}</dc:description>'
+                f'</metadata>\n'
+            )
+            content = re.sub(r'(<svg[^>]*>)', r'\1' + meta_block, content, count=1)
+            with open(output_path, "w", encoding="utf-8") as f:
+                f.write(content)
+
+        elif fmt in ("eps", "ai"):
+            try:
+                with open(output_path, "r", encoding="latin-1") as f:
+                    content = f.read()
+                lines = content.split("\n", 1)
+                ps_comment = f"%% {comment}\n"
+                content = lines[0] + "\n" + ps_comment + (lines[1] if len(lines) > 1 else "")
+                with open(output_path, "w", encoding="latin-1") as f:
+                    f.write(content)
+            except Exception:
+                pass  # Fichier binaire ou encodage non lisible
+
+    except Exception:
+        pass  # Ne jamais bloquer la conversion pour les métadonnées
+
+
 def convert_image(input_path, output_path, target_format):
     """Convertit une image en détectant automatiquement le type."""
     source_format = detect_format(input_path)
@@ -339,18 +409,23 @@ def convert_image(input_path, output_path, target_format):
     
     # Conversions raster → raster
     if source_type == "raster" and target_type == "raster":
-        return convert_raster_to_raster(input_path, output_path, target_format)
-    
+        success, message = convert_raster_to_raster(input_path, output_path, target_format)
+
     # Conversions raster -> vectoriel
-    if source_type == "raster" and target_type == "vector":
-        return convert_raster_to_vector(input_path, output_path, source_format, target_format)
-    
+    elif source_type == "raster" and target_type == "vector":
+        success, message = convert_raster_to_vector(input_path, output_path, source_format, target_format)
+
     # Conversions vectoriel → raster
-    if source_type == "vector" and target_type == "raster":
-        return convert_vector_to_raster(input_path, output_path, target_format)
+    elif source_type == "vector" and target_type == "raster":
+        success, message = convert_vector_to_raster(input_path, output_path, target_format)
 
     # Conversions vectoriel -> vectoriel
-    if source_type == "vector" and target_type == "vector":
-        return convert_vector_to_vector(input_path, output_path, source_format, target_format)
+    elif source_type == "vector" and target_type == "vector":
+        success, message = convert_vector_to_vector(input_path, output_path, source_format, target_format)
 
-    return False, f"Conversion de {source_type} à {target_type} non supportée"
+    else:
+        return False, f"Conversion de {source_type} à {target_type} non supportée"
+
+    if success:
+        _embed_credits_metadata(output_path, target_format)
+    return success, message

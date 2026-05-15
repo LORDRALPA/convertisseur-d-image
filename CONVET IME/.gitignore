@@ -1,0 +1,11 @@
+# Ignorer les dépôts Git imbriqués
+PROJET A/
+SAVED PROJECT/PROJET A/
+SAVED PROJECT/v2/PROJET A/
+
+# Ignorer les fichiers temporaires
+*.tmp
+*.log
+
+# Ignorer les dossiers inutiles
+THESE2026/

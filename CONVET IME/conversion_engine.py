@@ -259,45 +259,119 @@ def convert_raster_to_vector(input_path, output_path, source_format, target_form
     except Exception as e:
         return False, f"Erreur: {str(e)}"
 
+def _extract_png_from_svg_wrapper(svg_path):
+    """Extrait le PNG base64 d'un SVG encapsulé (format produit par ce moteur).
+    Retourne les données PNG bytes ou None si ce n'est pas un SVG wrapper."""
+    import re
+    try:
+        with open(svg_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        match = re.search(r'href="data:image/[^;]+;base64,([^"]+)"', content)
+        if match:
+            return base64.b64decode(match.group(1))
+    except Exception:
+        pass
+    return None
+
+
+def _rasterize_via_imagemagick(input_path, output_png_path):
+    """Utilise ImageMagick pour convertir un vecteur (PDF/EPS/AI/SVG) en PNG."""
+    cmd = _imagemagick_cmd()
+    if cmd is None:
+        return False, "ImageMagick non trouvé"
+    try:
+        # [0] = première page pour les multi-pages (PDF)
+        src = f"{input_path}[0]"
+        result = subprocess.run(
+            [cmd, "-density", "150", src, output_png_path],
+            capture_output=True, text=True, timeout=120
+        )
+        if result.returncode == 0 and Path(output_png_path).exists():
+            return True, "Rendu via ImageMagick"
+        return False, f"ImageMagick erreur: {result.stderr.strip() or 'inconnue'}"
+    except subprocess.TimeoutExpired:
+        return False, "ImageMagick timeout"
+    except Exception as e:
+        return False, f"ImageMagick exception: {e}"
+
+
 def convert_vector_to_raster(input_path, output_path, target_format):
     """Convertit une image vectorielle en raster."""
     try:
         source_format = detect_format(input_path)
-        if source_format == "svg":
-            import cairosvg
+
+        # Chemin commun : on travaille sur un PNG intermédiaire
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_png:
+            tmp_png_path = tmp_png.name
+
+        try:
+            if source_format == "svg":
+                # 1) Essayer d'extraire le PNG base64 de notre propre format encapsulé
+                png_data = _extract_png_from_svg_wrapper(input_path)
+                if png_data is not None:
+                    with open(tmp_png_path, "wb") as f:
+                        f.write(png_data)
+                else:
+                    # 2) Essayer cairosvg (nécessite libcairo-2.dll sur Windows)
+                    try:
+                        import cairosvg
+                        cairosvg.svg2png(url=str(input_path), write_to=tmp_png_path)
+                    except Exception:
+                        # 3) Fallback ImageMagick
+                        ok, msg = _rasterize_via_imagemagick(input_path, tmp_png_path)
+                        if not ok:
+                            return False, f"Impossible de lire le SVG ({msg}). Installez le runtime GTK ou ImageMagick."
+            else:
+                # PDF, EPS, AI → on essaie dans l'ordre de préférence
+                rasterized = False
+
+                # 1) PyMuPDF : gère PDF et AI (= PDF interne) sans Ghostscript
+                if source_format in ("pdf", "ai"):
+                    try:
+                        import fitz  # PyMuPDF
+                        doc = fitz.open(str(input_path))
+                        page = doc[0]
+                        mat = fitz.Matrix(2.0, 2.0)  # 2× zoom = ~150 dpi
+                        pix = page.get_pixmap(matrix=mat, alpha=False)
+                        pix.save(tmp_png_path)
+                        doc.close()
+                        rasterized = True
+                    except Exception:
+                        pass
+
+                # 2) ImageMagick (avec Ghostscript si disponible)
+                if not rasterized:
+                    ok, msg = _rasterize_via_imagemagick(input_path, tmp_png_path)
+                    if ok:
+                        rasterized = True
+
+                # 3) Pillow comme dernier recours (EPS + Ghostscript)
+                if not rasterized:
+                    gs_found = shutil.which("gswin64c") or shutil.which("gswin32c") or shutil.which("gs")
+                    if source_format in ("eps", "ai") and not gs_found:
+                        return False, (
+                            f"Impossible de lire ce fichier {source_format.upper()} : "
+                            "ni PyMuPDF, ni ImageMagick+Ghostscript ne sont disponibles. "
+                            "Installez Ghostscript (https://ghostscript.com) pour activer ce format."
+                        )
+                    try:
+                        with Image.open(input_path) as img:
+                            img.load()
+                            rgba = img.convert("RGBA") if img.mode != "RGBA" else img
+                            rgba.save(tmp_png_path, "PNG")
+                        rasterized = True
+                    except Exception as e:
+                        return False, f"Impossible de lire la source ({source_format}): {e}"
 
             if target_format == "png":
-                cairosvg.svg2png(url=input_path, write_to=output_path)
+                import shutil as _shutil
+                _shutil.copy2(tmp_png_path, output_path)
                 return True, "Conversion réussie"
+            return convert_raster_to_raster(tmp_png_path, output_path, target_format)
 
-            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_png:
-                tmp_png_path = tmp_png.name
-            try:
-                cairosvg.svg2png(url=input_path, write_to=tmp_png_path)
-                return convert_raster_to_raster(tmp_png_path, output_path, target_format)
-            finally:
-                if os.path.exists(tmp_png_path):
-                    os.remove(tmp_png_path)
-
-        else:
-            # EPS et AI nécessitent Ghostscript pour être lus.
-            # On vérifie sa présence avant d'appeler Image.open() qui peut boucler indéfiniment.
-            if source_format in ("eps", "ai"):
-                gs_found = shutil.which("gswin64c") or shutil.which("gswin32c") or shutil.which("gs")
-                if not gs_found:
-                    return False, "Erreur: Ghostscript requis pour lire les fichiers EPS/AI (non installé — installez-le avec winget install GNU.Ghostscript)"
-            # Fallback: tentative de rendu via Pillow (PDF/EPS/AI selon backend local).
-            with Image.open(input_path) as img:
-                img.load()
-                with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_png:
-                    tmp_png_path = tmp_png.name
-                try:
-                    rgba = img.convert("RGBA") if img.mode != "RGBA" else img
-                    rgba.save(tmp_png_path, "PNG")
-                    return convert_raster_to_raster(tmp_png_path, output_path, target_format)
-                finally:
-                    if os.path.exists(tmp_png_path):
-                        os.remove(tmp_png_path)
+        finally:
+            if os.path.exists(tmp_png_path):
+                os.remove(tmp_png_path)
     except Exception as e:
         return False, f"Erreur: {str(e)}"
 
@@ -306,12 +380,14 @@ def convert_vector_to_vector(input_path, output_path, source_format, target_form
     """Convertit un format vectoriel vers un autre via chemins directs/fallback."""
     try:
         if source_format == "svg" and target_format == "pdf":
-            import cairosvg
+            try:
+                import cairosvg
+                cairosvg.svg2pdf(url=str(input_path), write_to=str(output_path))
+                return True, "Conversion réussie"
+            except Exception:
+                pass  # cairosvg indisponible → chemin universel ci-dessous
 
-            cairosvg.svg2pdf(url=input_path, write_to=output_path)
-            return True, "Conversion réussie"
-
-        # Fallback universel: vector -> raster (png) -> vector cible.
+        # Chemin universel: vector → raster (png) → vector cible.
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_png:
             tmp_png_path = tmp_png.name
         try:

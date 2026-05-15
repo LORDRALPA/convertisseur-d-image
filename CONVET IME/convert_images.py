@@ -1,9 +1,17 @@
 import os
 from PIL import Image
 
+try:
+    from pillow_heif import register_heif_opener
+except ImportError:
+    register_heif_opener = None
+
 def convert_images_to_jpeg(input_folder, output_folder):
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
+
+    if register_heif_opener is not None:
+        register_heif_opener()
 
     for filename in os.listdir(input_folder):
         input_path = os.path.join(input_folder, filename)

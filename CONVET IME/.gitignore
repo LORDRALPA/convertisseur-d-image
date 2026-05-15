@@ -6,6 +6,30 @@ SAVED PROJECT/v2/PROJET A/
 # Ignorer les fichiers temporaires
 *.tmp
 *.log
+*.pyc
+__pycache__/
+*.egg-info/
 
 # Ignorer les dossiers inutiles
 THESE2026/
+
+# Ignorer les fichiers images converties (générés)
+images converties/
+*.jpeg
+*.png
+*.jpg
+*.webp
+*.gif
+*.bmp
+*.tiff
+
+# Environnement virtuel
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

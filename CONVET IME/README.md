@@ -1,43 +1,96 @@
-# Convertisseur d'images
+# ⚡ Convertisseur d'Images Pro
 
-## Description
-Application professionnelle pour convertir des images en différents formats. Supporte les formats raster (JPG, PNG, GIF, WebP, etc.) et vectoriels (SVG, PDF).
+> **Le convertisseur d'images open source le plus complet, portable et sexy.**
 
-## Structure du projet
-- `converter_gui.py` : Interface graphique principale de l'application.
-- `conversion_engine.py` : Moteur de conversion avec support multi-formats.
-- `convert_images.py` : Script en ligne de commande pour conversion par dossier.
-- `run_converter.bat` : Lanceur pour l'application GUI.
-- `Lancer_Convertisseur.vbs` : Lanceur sans fenêtre de console (recommandé).
-- `images brutes/` : Dossier contenant les images à convertir.
-- `images converties/` : Dossier où les images converties seront enregistrées.
+![Hero banner](https://user-images.githubusercontent.com/placeholder/banner-convertpro.png)
 
-## Installation
+- **14 formats** : JPG, PNG, WEBP, BMP, GIF, TIFF, ICO, PSD, HEIC, AVIF, SVG, PDF, AI, EPS
+- **546 combinaisons** source→cible
+- **Standalone** : un dossier à zipper, un double-clic, c'est prêt
+- **100% local** : aucune image n'est envoyée sur le cloud
+- **Licence MIT** : gratuit, open source, réutilisable
 
-### Prérequis
-- Python 3.8+ doit être installé.
-- Les dépendances nécessaires sont listées ci-dessous.
+---
 
-### Dépendances
-- `pillow` : Traitement des images raster
-- `pillow-heif` : Support des fichiers HEIC (Apple)
-- `PyQt5` : Interface graphique
-- `cairosvg` : Conversion SVG vers raster
-- `reportlab` : Support PDF
+## 🚀 Fonctionnalités principales
 
-Elles sont déjà installées dans l'environnement virtuel du projet.
+- Conversion multi-fichiers ultra-rapide (thread séparé)
+- Interface graphique PyQt5 moderne et intuitive
+- Indicateur de risque pour chaque conversion (vert/orange/rouge)
+- Métadonnées et crédits injectés dans chaque fichier produit
+- Dialogue « À propos » avec licence et mentions légales
+- Test automatique à l'installation (standalone)
+- Portabilité totale (aucun chemin fixe, aucun setup admin)
 
-## Utilisation
+---
 
-### Interface graphique (recommandée)
-1. Double-cliquez sur `Lancer_Convertisseur.vbs` pour lancer l'application.
-2. Cliquez sur "📁 Ajouter des images" pour sélectionner les fichiers à convertir.
-3. Choisissez le format cible dans le menu déroulant.
-4. Consultez les informations et risques de conversion.
-5. Cliquez sur "🚀 Convertir" et sélectionnez le dossier de destination.
+## 🎨 Formats supportés
 
-### Ligne de commande
-Pour convertir les images du dossier `images brutes` :
+| Raster         | Pro              | Vectoriel      |
+|----------------|------------------|----------------|
+| JPG, PNG, WEBP | PSD, HEIC, AVIF  | SVG, PDF, AI, EPS |
+| BMP, GIF, TIFF, ICO |              |                |
+
+---
+
+## 🛠️ Stack technique
+
+- **Python 3.8+**
+- **PyQt5 5.15.11**
+- **Pillow ≥ 9.0**
+- **pillow-heif** (HEIC/AVIF)
+- **PyMuPDF** (PDF/AI)
+- **ImageMagick** (PSD/EPS/PDF fallback)
+- **cairosvg** (optionnel, SVG)
+
+---
+
+## 📦 Version standalone
+
+1. **Téléchargez** le dossier ou le zip
+2. **Double-cliquez** sur `LANCER.bat`
+3. L'application vérifie l'environnement, installe les dépendances si besoin, effectue un test automatique, puis démarre l'interface graphique
+
+> **Aucune installation, aucun droit admin requis.**
+
+---
+
+## 📊 Métriques clés
+
+| Formats | Combinaisons | Tests OK | Lignes de code | Taille distrib | Licence |
+|---------|--------------|----------|----------------|---------------|---------|
+| 14      | 546          | 182/195  | 1191           | 270 Ko        | MIT     |
+
+---
+
+## 🔥 Démo visuelle
+
+> Pour une présentation sexy et interactive, consultez la [landing page HTML](CONVET%20IME/presentation.html) (à héberger sur GitHub Pages pour un rendu optimal).
+
+---
+
+## 📄 Rapport technique
+
+- [Rapport de développement complet (.docx)](CONVET%20IME/RAPPORT_DEVELOPPEMENT.docx)
+
+---
+
+## 👨‍💻 Auteur
+
+- Théophile TOKRE — [GitHub](https://github.com/LORDRALPA)
+
+---
+
+## 🌐 GitHub Pages
+
+> La page de présentation sexy sera bientôt disponible ici :
+> https://lordralpa.github.io/convertisseur-d-image/presentation.html
+
+---
+
+## Licence
+
+MIT — libre, open source, réutilisable sans restriction.
 ```bash
 python convert_images.py
 ```

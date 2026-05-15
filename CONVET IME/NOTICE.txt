@@ -1,0 +1,57 @@
+NOTICE — Convertisseur d'Images Pro
+=====================================
+Copyright (c) 2026 Théophile TOKRE
+Licence : MIT License (voir fichier LICENSE)
+
+Ce logiciel utilise les bibliothèques tierces suivantes :
+
+──────────────────────────────────────────────────────────────────────
+Pillow (PIL Fork)
+  Site     : https://python-pillow.org/
+  Licence  : HPND (Historical Permission Notice and Disclaimer)
+             https://github.com/python-pillow/Pillow/blob/main/LICENSE
+  Auteurs  : Jeffrey A. Clark (Alex) et contributeurs
+
+──────────────────────────────────────────────────────────────────────
+pillow-heif
+  Site     : https://github.com/bigcat88/pillow_heif
+  Licence  : BSD 3-Clause
+             https://github.com/bigcat88/pillow_heif/blob/master/LICENSE
+  Auteurs  : Alexander Piskun et contributeurs
+
+──────────────────────────────────────────────────────────────────────
+PyQt5
+  Site     : https://riverbankcomputing.com/software/pyqt/
+  Licence  : GPL v3 / Licence commerciale Riverbank Computing
+             https://www.riverbankcomputing.com/commercial/pyqt
+  Note     : Pour une distribution publique, une licence commerciale
+             PyQt5 peut être requise. Cet outil est à usage personnel.
+
+──────────────────────────────────────────────────────────────────────
+CairoSVG
+  Site     : https://cairosvg.org/
+  Licence  : LGPL v3.0
+             https://github.com/Kozea/CairoSVG/blob/master/LICENSE
+  Auteurs  : Kozea et contributeurs
+
+──────────────────────────────────────────────────────────────────────
+ReportLab
+  Site     : https://www.reportlab.com/
+  Licence  : BSD 3-Clause
+             https://hg.reportlab.com/hg-public/reportlab/file/tip/LICENSE.txt
+
+──────────────────────────────────────────────────────────────────────
+ImageMagick
+  Site     : https://imagemagick.org/
+  Licence  : ImageMagick License (Apache-2.0 compatible)
+             https://imagemagick.org/script/license.php
+  Auteurs  : ImageMagick Studio LLC
+  Note     : Utilisé en outil externe optionnel pour l'export PSD.
+             Soumis à sa propre licence indépendante de ce logiciel.
+
+──────────────────────────────────────────────────────────────────────
+
+AVERTISSEMENT GÉNÉRAL
+Ce logiciel est fourni "tel quel", sans garantie d'aucune sorte,
+expresse ou implicite. L'auteur décline toute responsabilité quant
+aux dommages directs ou indirects résultant de son utilisation.

@@ -1,5 +1,9 @@
 """
-Interface graphique pour le convertisseur d'images.
+Convertisseur d'Images Pro — Interface graphique
+Copyright (c) 2026 Théophile TOKRE
+Licence : MIT License — voir fichier LICENSE
+
+Fourni « tel quel », sans garantie d'aucune sorte.
 """
 import sys
 import os
@@ -106,7 +110,84 @@ class RiskInfoDialog(QDialog):
         return "Information non disponible"
 
 
-class ImageConverterUI(QMainWindow):
+class AboutDialog(QDialog):
+    """Dialogue À propos — informations légales et crédits."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("À propos")
+        self.setFixedSize(560, 520)
+        layout = QVBoxLayout()
+        layout.setSpacing(10)
+
+        # Titre
+        title = QLabel("🖼️ Convertisseur d'Images Pro")
+        title.setFont(QFont("Arial", 14, QFont.Bold))
+        title.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title)
+
+        # Version / auteur
+        author_label = QLabel("Développé par <b>Théophile TOKRE</b> &mdash; Version 1.0 &mdash; 2026")
+        author_label.setAlignment(Qt.AlignCenter)
+        author_label.setStyleSheet("color: #555; font-size: 12px;")
+        layout.addWidget(author_label)
+
+        # Séparateur visuel
+        sep = QLabel()
+        sep.setFixedHeight(1)
+        sep.setStyleSheet("background-color: #ddd;")
+        layout.addWidget(sep)
+
+        # Zone de texte légal
+        legal = QTextEdit()
+        legal.setReadOnly(True)
+        legal.setStyleSheet("font-size: 12px; border: none; background: #fafafa;")
+        legal.setHtml("""
+<h3 style="color:#333;">Licence</h3>
+<p>Ce logiciel est distribué sous la <b>licence MIT</b>.<br>
+Copyright &copy; 2026 Théophile TOKRE. Tous droits réservés.</p>
+
+<p style="color:#888; font-size:11px;">
+Permission est accordée, gratuitement, à toute personne obtenant une copie
+de ce logiciel, de l'utiliser, le copier, le modifier et le distribuer,
+sous réserve de conserver la notice de copyright et de licence.<br><br>
+CE LOGICIEL EST FOURNI <b>« TEL QUEL »</b>, SANS GARANTIE D'AUCUNE SORTE,
+EXPRESSE OU IMPLICITE. L'AUTEUR NE SAURAIT ÊTRE TENU RESPONSABLE
+D'AUCUN DOMMAGE DÉCOULANT DE SON UTILISATION.
+</p>
+
+<h3 style="color:#333;">Bibliothèques tierces</h3>
+<table style="width:100%; font-size:11px; border-collapse:collapse;">
+<tr><td><b>Pillow</b></td><td>HPND — python-pillow.org</td></tr>
+<tr><td><b>pillow-heif</b></td><td>BSD 3-Clause — github.com/bigcat88/pillow_heif</td></tr>
+<tr><td><b>PyQt5</b></td><td>GPL v3 — riverbankcomputing.com</td></tr>
+<tr><td><b>CairoSVG</b></td><td>LGPL v3 — cairosvg.org</td></tr>
+<tr><td><b>ReportLab</b></td><td>BSD 3-Clause — reportlab.com</td></tr>
+<tr><td><b>ImageMagick</b></td><td>Apache-2.0 compatible — imagemagick.org</td></tr>
+</table>
+
+<p style="font-size:11px; color:#888; margin-top:10px;">
+Voir le fichier <b>NOTICE.txt</b> pour le détail complet des licences tierces.
+</p>
+
+<h3 style="color:#333;">Protection des données</h3>
+<p style="font-size:11px; color:#888;">
+Ce logiciel traite vos images <b>localement sur votre machine</b>.<br>
+Aucune donnée n'est envoyée vers un serveur extérieur.
+</p>
+""")
+        layout.addWidget(legal)
+
+        # Bouton fermer
+        close_btn = QPushButton("Fermer")
+        close_btn.clicked.connect(self.accept)
+        close_btn.setStyleSheet("padding: 8px 24px; font-weight: bold;")
+        layout.addWidget(close_btn, alignment=Qt.AlignCenter)
+
+        self.setLayout(layout)
+
+
+
     """Interface utilisateur principale du convertisseur."""
     
     def __init__(self):
@@ -118,7 +199,13 @@ class ImageConverterUI(QMainWindow):
         """Initialise l'interface utilisateur."""
         self.setWindowTitle("Convertisseur d'Images Pro")
         self.setGeometry(100, 100, 900, 700)
-        
+
+        # Barre de menu
+        menubar = self.menuBar()
+        help_menu = menubar.addMenu("Aide")
+        about_action = help_menu.addAction("À propos / Mentions légales")
+        about_action.triggered.connect(self.show_about)
+
         # Style personnalisé
         self.setStyleSheet("""
             QMainWindow {
@@ -238,6 +325,11 @@ class ImageConverterUI(QMainWindow):
 
         central_widget.setLayout(main_layout)
     
+    def show_about(self):
+        """Affiche le dialogue À propos / mentions légales."""
+        dialog = AboutDialog(self)
+        dialog.exec_()
+
     def select_files(self):
         """Ouvre le dialogue de sélection de fichiers."""
         files, _ = QFileDialog.getOpenFileNames(

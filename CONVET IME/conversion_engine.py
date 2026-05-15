@@ -1,5 +1,9 @@
 """
-Moteur de conversion d'images avec support étendu des formats raster et vectoriels.
+Convertisseur d'Images Pro — Moteur de conversion
+Copyright (c) 2026 Théophile TOKRE
+Licence : MIT License — voir fichier LICENSE
+
+Fourni « tel quel », sans garantie d'aucune sorte.
 """
 import base64
 import io

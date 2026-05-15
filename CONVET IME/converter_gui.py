@@ -187,7 +187,7 @@ Aucune donnée n'est envoyée vers un serveur extérieur.
         self.setLayout(layout)
 
 
-
+class ImageConverterUI(QMainWindow):
     """Interface utilisateur principale du convertisseur."""
     
     def __init__(self):

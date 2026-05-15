@@ -280,6 +280,12 @@ def convert_vector_to_raster(input_path, output_path, target_format):
                     os.remove(tmp_png_path)
 
         else:
+            # EPS et AI nécessitent Ghostscript pour être lus.
+            # On vérifie sa présence avant d'appeler Image.open() qui peut boucler indéfiniment.
+            if source_format in ("eps", "ai"):
+                gs_found = shutil.which("gswin64c") or shutil.which("gswin32c") or shutil.which("gs")
+                if not gs_found:
+                    return False, "Erreur: Ghostscript requis pour lire les fichiers EPS/AI (non installé — installez-le avec winget install GNU.Ghostscript)"
             # Fallback: tentative de rendu via Pillow (PDF/EPS/AI selon backend local).
             with Image.open(input_path) as img:
                 img.load()

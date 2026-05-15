@@ -1,2 +1,868 @@
 <!DOCTYPE html>
-<!-- Landing page GitHub Pages — copie de CONVET IME/presentation.html -->
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Convertisseur d'Images Pro — Théophile TOKRE</title>
+<style>
+  /* ═══════════════════════════════════════════════════════
+     RESET & BASE
+  ═══════════════════════════════════════════════════════ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --c-bg:       #09090f;
+    --c-surface:  #111120;
+    --c-card:     #16162a;
+    --c-border:   rgba(99,102,241,.25);
+    --c-blue:     #6366f1;
+    --c-blue2:    #818cf8;
+    --c-pink:     #ec4899;
+    --c-cyan:     #22d3ee;
+    --c-green:    #4ade80;
+    --c-yellow:   #facc15;
+    --c-text:     #e2e8f0;
+    --c-muted:    #94a3b8;
+    --radius:     16px;
+    --shadow:     0 8px 40px rgba(99,102,241,.18);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  a { color: var(--c-blue2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ═══════════════════════════════════════════════════════
+     ANIMATED GRADIENT BG
+  ═══════════════════════════════════════════════════════ */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: -1;
+    background:
+      radial-gradient(ellipse 900px 600px at 10% 20%, rgba(99,102,241,.12) 0%, transparent 70%),
+      radial-gradient(ellipse 600px 400px at 90% 80%, rgba(236,72,153,.1)  0%, transparent 70%),
+      radial-gradient(ellipse 700px 500px at 60% 40%, rgba(34,211,238,.07) 0%, transparent 70%);
+    animation: bgPulse 12s ease-in-out infinite alternate;
+  }
+  @keyframes bgPulse {
+    from { opacity: .8; }
+    to   { opacity: 1;  }
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     NAV
+  ═══════════════════════════════════════════════════════ */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5vw;
+    height: 64px;
+    background: rgba(9,9,15,.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--c-border);
+  }
+  .nav-logo {
+    font-size: 1.1rem; font-weight: 800;
+    background: linear-gradient(135deg, var(--c-blue), var(--c-cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .nav-links { display: flex; gap: 28px; font-size: .88rem; }
+  .nav-links a { color: var(--c-muted); transition: color .2s; }
+  .nav-links a:hover { color: var(--c-text); text-decoration: none; }
+  .nav-cta {
+    padding: 8px 22px; border-radius: 999px; font-weight: 700; font-size: .88rem;
+    background: linear-gradient(135deg, var(--c-blue), var(--c-pink));
+    color: #fff; transition: transform .2s, box-shadow .2s;
+    border: none; cursor: pointer;
+  }
+  .nav-cta:hover { transform: scale(1.05); box-shadow: 0 0 24px rgba(99,102,241,.5); }
+
+  /* ═══════════════════════════════════════════════════════
+     HERO
+  ═══════════════════════════════════════════════════════ */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 80px 5vw 60px;
+    position: relative;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 18px; border-radius: 999px;
+    border: 1px solid var(--c-border);
+    background: rgba(99,102,241,.1);
+    font-size: .78rem; font-weight: 600; color: var(--c-blue2);
+    letter-spacing: .08em; text-transform: uppercase; margin-bottom: 32px;
+  }
+  .hero-badge span { width: 7px; height: 7px; border-radius: 50%; background: var(--c-green); animation: blink 1.6s infinite; }
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.2; } }
+
+  h1 {
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 900; line-height: 1.08; margin-bottom: 24px;
+    letter-spacing: -.03em;
+  }
+  .grad { background: linear-gradient(135deg, #fff 30%, var(--c-blue2) 60%, var(--c-pink) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-sub {
+    font-size: clamp(1rem, 2.2vw, 1.25rem); color: var(--c-muted);
+    max-width: 620px; margin: 0 auto 48px;
+  }
+  .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    padding: 16px 40px; border-radius: 999px; font-weight: 800; font-size: 1rem;
+    background: linear-gradient(135deg, var(--c-blue), var(--c-pink));
+    color: #fff; border: none; cursor: pointer;
+    box-shadow: 0 0 40px rgba(99,102,241,.4);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 0 60px rgba(99,102,241,.6); }
+  .btn-secondary {
+    padding: 16px 36px; border-radius: 999px; font-weight: 700; font-size: 1rem;
+    background: transparent; color: var(--c-text);
+    border: 1px solid var(--c-border);
+    cursor: pointer; transition: background .2s, border-color .2s;
+  }
+  .btn-secondary:hover { background: rgba(99,102,241,.1); border-color: var(--c-blue2); }
+
+  /* ── Format badges orbit ───────────────────────────────── */
+  .hero-formats {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 10px; margin-top: 64px; max-width: 640px; margin-left: auto; margin-right: auto;
+  }
+  .fmt {
+    padding: 5px 14px; border-radius: 999px; font-size: .78rem; font-weight: 700;
+    letter-spacing: .06em; text-transform: uppercase;
+    border: 1px solid; transition: transform .2s;
+  }
+  .fmt:hover { transform: translateY(-3px) scale(1.08); }
+  .fmt-raster { border-color: var(--c-blue);   color: var(--c-blue2);  background: rgba(99,102,241,.1); }
+  .fmt-pro    { border-color: var(--c-pink);   color: var(--c-pink);   background: rgba(236,72,153,.1); }
+  .fmt-vector { border-color: var(--c-cyan);   color: var(--c-cyan);   background: rgba(34,211,238,.1); }
+  .fmt-label  { font-size: .72rem; color: var(--c-muted); font-weight: 500; margin-right: 4px; }
+
+  /* ── Scroll hint ───────────────────────────────────────── */
+  .scroll-hint {
+    position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    font-size: .72rem; color: var(--c-muted); animation: float 2.5s ease-in-out infinite;
+  }
+  .scroll-hint::after {
+    content: '↓';
+    font-size: 1.2rem; color: var(--c-blue2);
+  }
+  @keyframes float { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
+
+  /* ═══════════════════════════════════════════════════════
+     STATS STRIP
+  ═══════════════════════════════════════════════════════ */
+  .stats-strip {
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 0;
+    border-top: 1px solid var(--c-border);
+    border-bottom: 1px solid var(--c-border);
+    background: var(--c-surface);
+  }
+  .stat-item {
+    flex: 1; min-width: 160px;
+    padding: 32px 24px; text-align: center;
+    border-right: 1px solid var(--c-border);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-size: 2.6rem; font-weight: 900; line-height: 1;
+    background: linear-gradient(135deg, var(--c-blue2), var(--c-cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .stat-label { font-size: .82rem; color: var(--c-muted); margin-top: 6px; }
+
+  /* ═══════════════════════════════════════════════════════
+     SECTIONS COMMUNES
+  ═══════════════════════════════════════════════════════ */
+  section { padding: 100px 5vw; max-width: 1200px; margin: 0 auto; }
+  .section-tag {
+    font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--c-blue2); margin-bottom: 12px;
+  }
+  h2 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; line-height: 1.15;
+    margin-bottom: 16px; letter-spacing: -.02em;
+  }
+  .section-sub { color: var(--c-muted); max-width: 600px; margin-bottom: 56px; font-size: 1.05rem; }
+
+  /* ═══════════════════════════════════════════════════════
+     FEATURE GRID
+  ═══════════════════════════════════════════════════════ */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+  .feat-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 32px;
+    transition: border-color .3s, transform .3s, box-shadow .3s;
+    position: relative; overflow: hidden;
+  }
+  .feat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--accent, linear-gradient(90deg, var(--c-blue), var(--c-cyan)));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .feat-card:hover {
+    border-color: var(--c-blue);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+  .feat-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin-bottom: 20px;
+    background: var(--icon-bg, rgba(99,102,241,.15));
+  }
+  .feat-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; }
+  .feat-card p  { font-size: .9rem; color: var(--c-muted); line-height: 1.7; }
+
+  /* ═══════════════════════════════════════════════════════
+     FORMAT MATRIX
+  ═══════════════════════════════════════════════════════ */
+  .matrix-section { background: var(--c-surface); padding: 100px 5vw; }
+  .matrix-inner { max-width: 1200px; margin: 0 auto; }
+  .formats-big {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .fmt-big {
+    background: var(--c-card); border: 1px solid var(--c-border);
+    border-radius: 12px; padding: 24px; transition: all .25s;
+  }
+  .fmt-big:hover { border-color: var(--c-blue); box-shadow: var(--shadow); transform: translateY(-2px); }
+  .fmt-big .fmt-name {
+    font-size: 1.6rem; font-weight: 900; letter-spacing: -.02em;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .fmt-big .fmt-desc { font-size: .82rem; color: var(--c-muted); line-height: 1.6; }
+  .fmt-big .fmt-type {
+    display: inline-block; margin-top: 10px;
+    padding: 2px 10px; border-radius: 999px; font-size: .7rem; font-weight: 700; letter-spacing: .06em;
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     PIPELINE SECTION
+  ═══════════════════════════════════════════════════════ */
+  .pipeline-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
+  }
+  .pipe-card {
+    background: var(--c-card); border: 1px solid var(--c-border);
+    border-radius: 12px; padding: 28px;
+  }
+  .pipe-card .pipe-source {
+    font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--c-muted); margin-bottom: 8px;
+  }
+  .pipe-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+  .pipe-steps { list-style: none; }
+  .pipe-steps li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: .85rem; color: var(--c-muted); margin-bottom: 8px;
+  }
+  .pipe-steps li::before {
+    content: '→'; color: var(--c-blue2); flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     STANDALONE SECTION
+  ═══════════════════════════════════════════════════════ */
+  .steps-row {
+    display: flex; gap: 0; position: relative;
+  }
+  .steps-row::before {
+    content: '';
+    position: absolute; top: 32px; left: 32px; right: 32px; height: 2px;
+    background: linear-gradient(90deg, var(--c-blue), var(--c-cyan), var(--c-pink));
+    z-index: 0;
+  }
+  .step-item {
+    flex: 1; min-width: 140px; text-align: center; padding: 0 12px;
+    position: relative; z-index: 1;
+  }
+  .step-num {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--c-blue), var(--c-cyan));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin: 0 auto 16px;
+    box-shadow: 0 0 20px rgba(99,102,241,.4);
+  }
+  .step-title { font-size: .9rem; font-weight: 700; margin-bottom: 6px; }
+  .step-desc  { font-size: .8rem; color: var(--c-muted); }
+
+  /* ═══════════════════════════════════════════════════════
+     CODE BLOCK (terminal-style)
+  ═══════════════════════════════════════════════════════ */
+  .terminal {
+    background: #080810; border: 1px solid var(--c-border); border-radius: 12px;
+    padding: 24px 28px; font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: .82rem; line-height: 1.9;
+    position: relative; overflow: hidden;
+  }
+  .terminal::before {
+    content: '● ● ●';
+    display: block; margin-bottom: 16px;
+    color: var(--c-muted); letter-spacing: 8px; font-size: .6rem;
+  }
+  .t-dim    { color: #4a5568; }
+  .t-green  { color: var(--c-green); }
+  .t-blue   { color: var(--c-blue2); }
+  .t-yellow { color: var(--c-yellow); }
+  .t-pink   { color: var(--c-pink); }
+  .t-cyan   { color: var(--c-cyan); }
+
+  /* ═══════════════════════════════════════════════════════
+     TECH STACK
+  ═══════════════════════════════════════════════════════ */
+  .tech-pills {
+    display: flex; flex-wrap: wrap; gap: 12px; margin-top: 40px;
+  }
+  .tech-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: 999px;
+    background: var(--c-card); border: 1px solid var(--c-border);
+    font-size: .85rem; font-weight: 600;
+    transition: border-color .2s, transform .2s;
+  }
+  .tech-pill:hover { border-color: var(--c-blue2); transform: translateY(-2px); }
+  .tech-pill .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ═══════════════════════════════════════════════════════
+     METRICS WALL
+  ═══════════════════════════════════════════════════════ */
+  .metrics-wall {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 2px; overflow: hidden; border-radius: var(--radius);
+    border: 2px solid var(--c-border);
+  }
+  .metric {
+    background: var(--c-card); padding: 32px 20px; text-align: center;
+    transition: background .2s;
+  }
+  .metric:hover { background: rgba(99,102,241,.1); }
+  .metric-val {
+    font-size: 2.2rem; font-weight: 900; line-height: 1;
+    background: linear-gradient(135deg, var(--c-blue2), var(--c-pink));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .metric-label { font-size: .8rem; color: var(--c-muted); margin-top: 8px; }
+
+  /* ═══════════════════════════════════════════════════════
+     CTA FINALE
+  ═══════════════════════════════════════════════════════ */
+  .cta-section {
+    text-align: center;
+    padding: 120px 5vw;
+    position: relative;
+  }
+  .cta-glow {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(99,102,241,.15), transparent 70%);
+    pointer-events: none;
+  }
+  .cta-section h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 20px; }
+  .cta-section p  { color: var(--c-muted); font-size: 1.1rem; max-width: 540px; margin: 0 auto 48px; }
+
+  /* ═══════════════════════════════════════════════════════
+     FOOTER
+  ═══════════════════════════════════════════════════════ */
+  footer {
+    border-top: 1px solid var(--c-border);
+    padding: 40px 5vw;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-size: .82rem; color: var(--c-muted);
+  }
+  .footer-logo {
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--c-blue), var(--c-cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     RESPONSIVE
+  ═══════════════════════════════════════════════════════ */
+  @media (max-width: 700px) {
+    .nav-links { display: none; }
+    .steps-row { flex-direction: column; gap: 32px; }
+    .steps-row::before { display: none; }
+    footer { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     NAV
+══════════════════════════════════════════════════════════ -->
+<nav>
+  <div class="nav-logo">⚡ ConvertPro</div>
+  <div class="nav-links">
+    <a href="#formats">Formats</a>
+    <a href="#features">Fonctionnalités</a>
+    <a href="#pipelines">Architecture</a>
+    <a href="#standalone">Standalone</a>
+    <a href="#metrics">Métriques</a>
+  </div>
+  <a href="https://github.com/LORDRALPA/convertisseur-d-image" target="_blank" class="nav-cta">↓ GitHub</a>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">
+    <span></span>
+    Production-ready · Open Source · MIT License
+  </div>
+
+  <h1>
+    Convertissez <span class="grad">n'importe quelle<br>image</span> en tout format.
+  </h1>
+
+  <p class="hero-sub">
+    14 formats. 546 combinaisons. Un double-clic.
+    L'outil de conversion d'images le plus complet que vous puissiez distribuer.
+  </p>
+
+  <div class="hero-btns">
+    <a href="https://github.com/LORDRALPA/convertisseur-d-image" target="_blank">
+      <button class="btn-primary">🚀 Télécharger gratuitement</button>
+    </a>
+    <a href="#features">
+      <button class="btn-secondary">Découvrir les fonctionnalités →</button>
+    </a>
+  </div>
+
+  <div class="hero-formats">
+    <span class="fmt-label">Raster</span>
+    <span class="fmt fmt-raster">JPG</span>
+    <span class="fmt fmt-raster">PNG</span>
+    <span class="fmt fmt-raster">WEBP</span>
+    <span class="fmt fmt-raster">BMP</span>
+    <span class="fmt fmt-raster">GIF</span>
+    <span class="fmt fmt-raster">TIFF</span>
+    <span class="fmt fmt-raster">ICO</span>
+    <span class="fmt-label" style="margin-left:8px">Pro</span>
+    <span class="fmt fmt-pro">PSD</span>
+    <span class="fmt fmt-pro">HEIC</span>
+    <span class="fmt fmt-pro">AVIF</span>
+    <span class="fmt-label" style="margin-left:8px">Vector</span>
+    <span class="fmt fmt-vector">SVG</span>
+    <span class="fmt fmt-vector">PDF</span>
+    <span class="fmt fmt-vector">AI</span>
+    <span class="fmt fmt-vector">EPS</span>
+  </div>
+
+  <div class="scroll-hint">Défiler</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     STATS STRIP
+══════════════════════════════════════════════════════════ -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <div class="stat-num">14</div>
+    <div class="stat-label">Formats supportés</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">546</div>
+    <div class="stat-label">Combinaisons de conversion</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">93%</div>
+    <div class="stat-label">Taux de réussite (tests)</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">0 €</div>
+    <div class="stat-label">Prix — MIT License</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">1 clic</div>
+    <div class="stat-label">Installation standalone</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     FEATURES
+══════════════════════════════════════════════════════════ -->
+<section id="features">
+  <div class="section-tag">Fonctionnalités</div>
+  <h2>Tout ce dont vous avez besoin.<br><span class="grad">Rien de superflu.</span></h2>
+  <p class="section-sub">
+    Un moteur pensé pour les pros, une interface pensée pour tout le monde.
+    Sans inscription, sans abonnement, sans cloud.
+  </p>
+  <div class="features-grid">
+    <div class="feat-card" style="--accent: linear-gradient(90deg,#6366f1,#818cf8)">
+      <div class="feat-icon" style="--icon-bg: rgba(99,102,241,.15)">🎨</div>
+      <h3>14 formats en un outil</h3>
+      <p>JPG, PNG, WEBP, BMP, GIF, TIFF, ICO, PSD, HEIC, AVIF, SVG, PDF, AI, EPS — couverts nativement ou via pipeline intelligent.</p>
+    </div>
+    <div class="feat-card" style="--accent: linear-gradient(90deg,#ec4899,#f472b6)">
+      <div class="feat-icon" style="--icon-bg: rgba(236,72,153,.15)">⚡</div>
+      <h3>Conversion multi-fichiers</h3>
+      <p>Glissez-déposez des dizaines de fichiers, choisissez le format cible, et convertissez le tout en un clic. Thread séparé, interface toujours réactive.</p>
+    </div>
+    <div class="feat-card" style="--accent: linear-gradient(90deg,#22d3ee,#67e8f9)">
+      <div class="feat-icon" style="--icon-bg: rgba(34,211,238,.15)">🔒</div>
+      <h3>100% local — 0 cloud</h3>
+      <p>Vos images ne quittent jamais votre machine. Aucune API tierce, aucun compte requis. Parfait pour les données sensibles.</p>
+    </div>
+    <div class="feat-card" style="--accent: linear-gradient(90deg,#4ade80,#86efac)">
+      <div class="feat-icon" style="--icon-bg: rgba(74,222,128,.15)">📦</div>
+      <h3>Standalone portable</h3>
+      <p>Un dossier à zipper, un double-clic sur LANCER.bat. L'application s'auto-installe, se teste, puis démarre. Aucun setup manuel.</p>
+    </div>
+    <div class="feat-card" style="--accent: linear-gradient(90deg,#facc15,#fde68a)">
+      <div class="feat-icon" style="--icon-bg: rgba(250,204,21,.15)">⚠️</div>
+      <h3>Indicateur de risque</h3>
+      <p>Chaque combinaison source→cible affiche un niveau de risque (vert / orange / rouge) avec un dialogue explicatif détaillé.</p>
+    </div>
+    <div class="feat-card" style="--accent: linear-gradient(90deg,#a78bfa,#c4b5fd)">
+      <div class="feat-icon" style="--icon-bg: rgba(167,139,250,.15)">🏷️</div>
+      <h3>Métadonnées embarquées</h3>
+      <p>Date de conversion et crédits auteur automatiquement injectés dans chaque fichier produit (EXIF, XMP selon le format).</p>
+    </div>
+    <div class="feat-card" style="--accent: linear-gradient(90deg,#f97316,#fb923c)">
+      <div class="feat-icon" style="--icon-bg: rgba(249,115,22,.15)">🧠</div>
+      <h3>Pipeline adaptatif</h3>
+      <p>Le moteur essaie plusieurs stratégies (Pillow → PyMuPDF → ImageMagick) selon la source et la cible, maximisant le taux de réussite.</p>
+    </div>
+    <div class="feat-card" style="--accent: linear-gradient(90deg,#06b6d4,#22d3ee)">
+      <div class="feat-icon" style="--icon-bg: rgba(6,182,212,.15)">⚖️</div>
+      <h3>Licence MIT + mentions légales</h3>
+      <p>Open source, réutilisable librement. Dialogue « À propos » intégré avec licence complète et attributions tierces.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     FORMAT MATRIX
+══════════════════════════════════════════════════════════ -->
+<div class="matrix-section" id="formats">
+  <div class="matrix-inner">
+    <div class="section-tag">Matrice de formats</div>
+    <h2>Chaque format,<br><span class="grad">maîtrisé.</span></h2>
+    <p class="section-sub">De l'image de téléphone au fichier Photoshop professionnel — le moteur sait quoi faire.</p>
+
+    <div class="formats-big">
+      <!-- Raster -->
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-blue2)">JPG</div>
+        <div class="fmt-desc">Le standard universel. Compression optimisée, qualité configurable.</div>
+        <span class="fmt-type" style="background:rgba(99,102,241,.15);color:var(--c-blue2)">Raster</span>
+      </div>
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-blue2)">PNG</div>
+        <div class="fmt-desc">Transparence, haute qualité, sans perte. Le format web de référence.</div>
+        <span class="fmt-type" style="background:rgba(99,102,241,.15);color:var(--c-blue2)">Raster</span>
+      </div>
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-blue2)">WEBP</div>
+        <div class="fmt-desc">Format Google ultra-efficace. 30% plus léger que JPG à qualité égale.</div>
+        <span class="fmt-type" style="background:rgba(99,102,241,.15);color:var(--c-blue2)">Raster</span>
+      </div>
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-blue2)">GIF</div>
+        <div class="fmt-desc">Animations et palettes indexées. Lecture source et export complets.</div>
+        <span class="fmt-type" style="background:rgba(99,102,241,.15);color:var(--c-blue2)">Raster</span>
+      </div>
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-blue2)">TIFF</div>
+        <div class="fmt-desc">Format archive professionnel, sans perte, multi-couches.</div>
+        <span class="fmt-type" style="background:rgba(99,102,241,.15);color:var(--c-blue2)">Raster</span>
+      </div>
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-blue2)">BMP</div>
+        <div class="fmt-desc">Format natif Windows. Brut, sans compression, compatible partout.</div>
+        <span class="fmt-type" style="background:rgba(99,102,241,.15);color:var(--c-blue2)">Raster</span>
+      </div>
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-blue2)">ICO</div>
+        <div class="fmt-desc">Icônes Windows multi-résolution. Idéal pour apps et favicons.</div>
+        <span class="fmt-type" style="background:rgba(99,102,241,.15);color:var(--c-blue2)">Raster</span>
+      </div>
+      <!-- Pro -->
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-pink)">PSD</div>
+        <div class="fmt-desc">Format Photoshop. Export via ImageMagick, import via Pillow.</div>
+        <span class="fmt-type" style="background:rgba(236,72,153,.15);color:var(--c-pink)">Professionnel</span>
+      </div>
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-pink)">HEIC</div>
+        <div class="fmt-desc">Format iPhone. Le plus efficace du marché. Support complet via pillow-heif.</div>
+        <span class="fmt-type" style="background:rgba(236,72,153,.15);color:var(--c-pink)">Professionnel</span>
+      </div>
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-pink)">AVIF</div>
+        <div class="fmt-desc">Successeur de WebP. Compression AV1, qualité maximale à taille minimale.</div>
+        <span class="fmt-type" style="background:rgba(236,72,153,.15);color:var(--c-pink)">Professionnel</span>
+      </div>
+      <!-- Vector -->
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-cyan)">SVG</div>
+        <div class="fmt-desc">Vectoriel XML. Source : extraction PNG embarqué. Cible : wrapper base64.</div>
+        <span class="fmt-type" style="background:rgba(34,211,238,.15);color:var(--c-cyan)">Vectoriel</span>
+      </div>
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-cyan)">PDF</div>
+        <div class="fmt-desc">Source : PyMuPDF haute résolution. Cible : encapsulation Pillow native.</div>
+        <span class="fmt-type" style="background:rgba(34,211,238,.15);color:var(--c-cyan)">Vectoriel</span>
+      </div>
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-cyan)">AI</div>
+        <div class="fmt-desc">Fichiers Adobe Illustrator (structure PDF interne). Lu via PyMuPDF.</div>
+        <span class="fmt-type" style="background:rgba(34,211,238,.15);color:var(--c-cyan)">Vectoriel</span>
+      </div>
+      <div class="fmt-big">
+        <div class="fmt-name" style="color: var(--c-cyan)">EPS</div>
+        <div class="fmt-desc">PostScript encapsulé. Nécessite Ghostscript pour la lecture source.</div>
+        <span class="fmt-type" style="background:rgba(34,211,238,.15);color:var(--c-cyan)">Vectoriel</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PIPELINES
+══════════════════════════════════════════════════════════ -->
+<section id="pipelines">
+  <div class="section-tag">Architecture</div>
+  <h2>Un moteur<br><span class="grad">multi-stratégies.</span></h2>
+  <p class="section-sub">
+    Pour chaque type de source, le moteur essaie plusieurs approches en cascade pour maximiser les chances de conversion.
+  </p>
+  <div class="pipeline-grid">
+    <div class="pipe-card">
+      <div class="pipe-source">Source</div>
+      <h4>🖼️ Images raster</h4>
+      <ul class="pipe-steps">
+        <li>Pillow.open() + détection du mode</li>
+        <li>Conversion de mode (RGBA, P, L…)</li>
+        <li>Sauvegarde dans le format cible</li>
+      </ul>
+    </div>
+    <div class="pipe-card">
+      <div class="pipe-source">Source</div>
+      <h4>🎭 PSD Photoshop</h4>
+      <ul class="pipe-steps">
+        <li>Pillow (mode PSD) → PNG intermédiaire</li>
+        <li>Fallback ImageMagick si Pillow échoue</li>
+        <li>Conversion vers le format cible</li>
+      </ul>
+    </div>
+    <div class="pipe-card">
+      <div class="pipe-source">Source</div>
+      <h4>📄 PDF / AI</h4>
+      <ul class="pipe-steps">
+        <li>PyMuPDF fitz.open() + pixmap 2× (HiDPI)</li>
+        <li>PNG temporaire en mémoire</li>
+        <li>Fallback ImageMagick -density 150</li>
+      </ul>
+    </div>
+    <div class="pipe-card">
+      <div class="pipe-source">Source</div>
+      <h4>✏️ SVG</h4>
+      <ul class="pipe-steps">
+        <li>Extraction PNG base64 embarqué dans le SVG</li>
+        <li>Fallback cairosvg (si GTK disponible)</li>
+        <li>Fallback ImageMagick</li>
+      </ul>
+    </div>
+    <div class="pipe-card">
+      <div class="pipe-source">Cible</div>
+      <h4>✏️ Vers SVG</h4>
+      <ul class="pipe-steps">
+        <li>Conversion vers PNG intermédiaire</li>
+        <li>Encodage base64 du PNG</li>
+        <li>Génération du wrapper SVG XML</li>
+      </ul>
+    </div>
+    <div class="pipe-card">
+      <div class="pipe-source">Cible</div>
+      <h4>🎭 Vers PSD</h4>
+      <ul class="pipe-steps">
+        <li>Conversion Pillow vers PNG intermédiaire</li>
+        <li>ImageMagick convert → .psd</li>
+        <li>Vérification de la taille de sortie</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Tech stack -->
+  <div style="margin-top: 60px;">
+    <div class="section-tag">Stack technique</div>
+    <div class="tech-pills">
+      <div class="tech-pill"><span class="dot" style="background:#4ade80"></span>Python 3.8+</div>
+      <div class="tech-pill"><span class="dot" style="background:#6366f1"></span>PyQt5 5.15.11</div>
+      <div class="tech-pill"><span class="dot" style="background:#22d3ee"></span>Pillow ≥ 9.0</div>
+      <div class="tech-pill"><span class="dot" style="background:#ec4899"></span>pillow-heif</div>
+      <div class="tech-pill"><span class="dot" style="background:#facc15"></span>PyMuPDF 1.27</div>
+      <div class="tech-pill"><span class="dot" style="background:#f97316"></span>ImageMagick 7</div>
+      <div class="tech-pill"><span class="dot" style="background:#a78bfa"></span>cairosvg (optionnel)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     STANDALONE
+══════════════════════════════════════════════════════════ -->
+<div class="matrix-section" id="standalone">
+  <div class="matrix-inner">
+    <div class="section-tag">Version Standalone</div>
+    <h2>Zippez. Envoyez.<br><span class="grad">C'est prêt.</span></h2>
+    <p class="section-sub">
+      Pas d'installeur. Pas de droits admin. Pas de configuration.
+      Juste un dossier à distribuer.
+    </p>
+
+    <div class="steps-row" style="margin-bottom: 64px;">
+      <div class="step-item">
+        <div class="step-num">🎉</div>
+        <div class="step-title">Bienvenue</div>
+        <div class="step-desc">Bannière console + message de bienvenue personnalisé</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">🔍</div>
+        <div class="step-title">Vérification</div>
+        <div class="step-desc">Python, dépendances pip, ImageMagick — auto-installé si manquant</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">🧪</div>
+        <div class="step-title">Test auto</div>
+        <div class="step-desc">Conversion PNG → JPG, WEBP, BMP avec rapport de taille</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">🪟</div>
+        <div class="step-title">Dialogue Qt</div>
+        <div class="step-desc">Résumé visuel des checks + bouton Démarrer</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">🚀</div>
+        <div class="step-title">Application</div>
+        <div class="step-desc">Interface complète prête à l'emploi</div>
+      </div>
+    </div>
+
+    <!-- Terminal mockup -->
+    <div class="terminal">
+      <div class="t-dim">╔══════════════════════════════════════════════════╗</div>
+      <div class="t-dim">║   <span class="t-blue">CONVERTISSEUR D'IMAGES PRO</span>  v1.0           ║</div>
+      <div class="t-dim">║   <span class="t-dim">par Théophile TOKRE — MIT License</span>           ║</div>
+      <div class="t-dim">╚══════════════════════════════════════════════════╝</div>
+      <br>
+      <div><span class="t-dim">[INFO]</span> <span class="t-green">✔</span> Python 3.11.4 détecté</div>
+      <div><span class="t-dim">[INFO]</span> <span class="t-green">✔</span> Pillow 10.3.0 — OK</div>
+      <div><span class="t-dim">[INFO]</span> <span class="t-green">✔</span> PyQt5 5.15.11 — OK</div>
+      <div><span class="t-dim">[INFO]</span> <span class="t-green">✔</span> PyMuPDF 1.27.2 — OK</div>
+      <div><span class="t-dim">[INFO]</span> <span class="t-yellow">⚡</span> pillow-heif absent — installation en cours...</div>
+      <div><span class="t-dim">[INFO]</span> <span class="t-green">✔</span> pillow-heif installé avec succès</div>
+      <div><span class="t-dim">[INFO]</span> <span class="t-green">✔</span> ImageMagick 7.1.2 détecté dans le PATH</div>
+      <br>
+      <div><span class="t-dim">[TEST]</span> <span class="t-cyan">PNG → JPG</span> ............ <span class="t-green">✔ 42.1 Ko</span></div>
+      <div><span class="t-dim">[TEST]</span> <span class="t-cyan">PNG → WEBP</span> ........... <span class="t-green">✔ 28.7 Ko</span></div>
+      <div><span class="t-dim">[TEST]</span> <span class="t-cyan">PNG → BMP</span> ............ <span class="t-green">✔ 217.8 Ko</span></div>
+      <br>
+      <div><span class="t-green">Tout est prêt. Ouverture de l'application...</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     METRICS
+══════════════════════════════════════════════════════════ -->
+<section id="metrics">
+  <div class="section-tag">Métriques</div>
+  <h2>Des chiffres qui<br><span class="grad">parlent d'eux-mêmes.</span></h2>
+  <p class="section-sub">Résultats mesurés sur la version de production, test exhaustif complet.</p>
+  <div class="metrics-wall">
+    <div class="metric">
+      <div class="metric-val">14</div>
+      <div class="metric-label">Formats supportés</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">546</div>
+      <div class="metric-label">Combinaisons possibles</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">182</div>
+      <div class="metric-label">Tests réussis / 195</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">93%</div>
+      <div class="metric-label">Taux de réussite</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">1191</div>
+      <div class="metric-label">Lignes de code</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">12</div>
+      <div class="metric-label">Commits Git</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">270 Ko</div>
+      <div class="metric-label">Taille standalone</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">MIT</div>
+      <div class="metric-label">Licence — Gratuit</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     CTA FINALE
+══════════════════════════════════════════════════════════ -->
+<div class="cta-section">
+  <div class="cta-glow"></div>
+  <div class="section-tag">Open Source & Gratuit</div>
+  <h2>Prêt à convertir<br><span class="grad">sans compromis ?</span></h2>
+  <p>
+    Téléchargez la version standalone, double-cliquez sur LANCER.bat,
+    et commencez à convertir en moins de 60 secondes.
+  </p>
+  <div class="hero-btns">
+    <a href="https://github.com/LORDRALPA/convertisseur-d-image" target="_blank">
+      <button class="btn-primary">🚀 Obtenir sur GitHub</button>
+    </a>
+    <a href="RAPPORT_DEVELOPPEMENT.docx" download>
+      <button class="btn-secondary">📄 Rapport technique (.docx)</button>
+    </a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════ -->
+<footer>
+  <div>
+    <span class="footer-logo">⚡ ConvertPro</span>
+    &nbsp;·&nbsp; Convertisseur d'Images Pro
+  </div>
+  <div>Par <strong>Théophile TOKRE</strong> · Licence MIT · Mai 2026</div>
+  <div>
+    <a href="https://github.com/LORDRALPA/convertisseur-d-image" target="_blank">GitHub →</a>
+  </div>
+</footer>
+
+</body>
+</html>
